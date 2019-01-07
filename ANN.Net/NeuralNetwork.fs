@@ -25,12 +25,12 @@
         let connections = [for l in [0..layers.Length-2] -> CreateNetworkConnection layers.[l] layers.[l+1] weight] ;
         {Layers=layers;Connections=connections;Normalization=normalize;Generator=weight}
     
-    let CalculateLayer (connections:NetworkConnection) =
-        CreateLayer [for r in connections.Connections.GroupBy(fun c-> c.Output) -> r.Sum(fun s -> s.Input.NodeValue * s.Weight.WeightValue)] Sigmoid
+    let CalculateLayer (connections:NetworkConnection) normalization =
+        CreateLayer [for r in connections.Connections.GroupBy(fun c-> c.Output) -> r.Sum(fun s -> s.Input.NodeValue * s.Weight.WeightValue)] normalization
     
 
     let SetInputs network input =
-        let inputLayer = CreateLayer input Sigmoid;
+        let inputLayer = CreateLayer input network.Normalization;
         let connection = {network.Connections.First() with Input = inputLayer};
 
         let layers = network.Layers.Skip(1).Reverse() |> Seq.toList |> List.append [inputLayer] |> List.rev;
@@ -39,12 +39,9 @@
         newNetwork
     let CalculateNetwork network input =
         let newNetwork = SetInputs network input;
-        let layers = [newNetwork.Layers.First()] |> List.append [for r in newNetwork.Connections -> CalculateLayer r];
+        let layers = [newNetwork.Layers.First()] |> List.append [for r in newNetwork.Connections -> CalculateLayer r newNetwork.Normalization];
         {newNetwork with Layers=layers}
         
-        
-        
-    
 module Tests =
     open System
     
