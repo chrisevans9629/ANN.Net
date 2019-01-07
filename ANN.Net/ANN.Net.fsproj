@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Tutorial.fsx" />
     <Content Include="packages.config" />
+    <Compile Include="NeuralNetwork.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">
