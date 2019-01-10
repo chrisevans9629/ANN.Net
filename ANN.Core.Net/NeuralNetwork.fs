@@ -9,7 +9,7 @@ module NeuralNetworks =
     type Connection = {Input:Node;Weight:Weight;Output:Node}
     type NetworkLayer = {Nodes:Node[]}
     type NetworkConnection = {Input:NetworkLayer;Connections:Connection[];Output:NetworkLayer}
-    type Network = {Layers:NetworkLayer list;Connections:NetworkConnection list;Generator:unit->float;Normalization:float->float}
+    type Network = {Layers:NetworkLayer list;NetworkConnections:NetworkConnection list;Generator:unit->float;Normalization:float->float}
     let Sigmoid x = x/(Math.Sqrt(1.0+x*x));
 
     let CreateNode x = {NodeValue=x;};
@@ -22,11 +22,20 @@ module NeuralNetworks =
     let CreateWeight x = {WeightValue=x;};
     let CreateConnection inputNode weight outputNode = {Input=inputNode;Weight=weight;Output=outputNode};
 
-    let CreateNetworkConnection inputLayer outputLayer weight = {Input=inputLayer;Output=outputLayer;Connections=[|for n1 in inputLayer.Nodes do for n2 in outputLayer.Nodes -> CreateConnection n1 (CreateWeight (weight())) n2|]}
+    let CreateConnections inputLayer outputLayer weight =
+        [|for n1 in inputLayer.Nodes do for n2 in outputLayer.Nodes -> CreateConnection n1 (CreateWeight (weight())) n2|]
+
+    let CreateNetworkConnection inputLayer outputLayer weight = 
+        {Input=inputLayer;Output=outputLayer;Connections=CreateConnections inputLayer outputLayer weight}
+    
+    let GetConnections (layers:NetworkLayer list) weight =
+        [for l in [0..layers.Length-2] -> CreateNetworkConnection layers.[l] layers.[l+1] weight] ;
+
     let CreateNetwork weight normalize layout =
         let layers = [for l in layout -> CreateLayerWithSize l];
-        let connections = [for l in [0..layers.Length-2] -> CreateNetworkConnection layers.[l] layers.[l+1] weight] ;
-        {Layers=layers;Connections=connections;Normalization=normalize;Generator=weight}
+        let connections = GetConnections layers weight
+        {Layers=layers;NetworkConnections=connections;Normalization=normalize;Generator=weight}
+    
     
 
     let random = new Random();
@@ -39,15 +48,15 @@ module NeuralNetworks =
 
     let SetInputs network input =
         let inputLayer = CreateLayer input network.Normalization;
-        let connection = {network.Connections.First() with Input = inputLayer};
+        let connection = {network.NetworkConnections.First() with Input = inputLayer};
 
-        let layers = network.Layers.Skip(1).Reverse() |> Seq.toList |> List.append [inputLayer] |> List.rev;
-        let connections = network.Connections.Skip(1).Reverse() |> Seq.toList |> List.append [connection] |> List.rev;
-        let newNetwork = {network with Layers=layers; Connections=connections}
+        let layers = [for r in network.Layers.Skip(1) -> r] |> List.append  [inputLayer]
+        let connections = [for r in network.NetworkConnections.Skip(1) -> r] |> List.append  [connection]
+        let newNetwork = {network with Layers=layers; NetworkConnections=connections}
         newNetwork
     let CalculateNetwork network input =
         let newNetwork = SetInputs network input;
-        let layers = [newNetwork.Layers.First()] |> List.append [for r in newNetwork.Connections -> CalculateLayer r newNetwork.Normalization];
+        let layers = [for r in newNetwork.NetworkConnections -> CalculateLayer r newNetwork.Normalization] |> List.append  [newNetwork.Layers.First()];
         {newNetwork with Layers=layers}
         
 module Tests =
