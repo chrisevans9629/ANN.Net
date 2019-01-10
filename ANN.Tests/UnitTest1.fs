@@ -20,8 +20,8 @@ type TestClass () =
         Assert.AreEqual(6, network.NetworkConnections.[0].Connections.Length)
         Assert.AreEqual(6, network.NetworkConnections.[1].Connections.Length)
         
-        Assert.AreEqual(network.Layers.[0], network.NetworkConnections.[0].Input)
-        Assert.AreEqual(network.Layers.[0].Nodes.[0], network.NetworkConnections.[0].Connections.[0].Input)
+        Assert.AreEqual(network.Layers.[0], network.NetworkConnections.[0].InputLayer)
+        Assert.AreEqual(network.Layers.[0].Nodes.[0], network.NetworkConnections.[0].Connections.[0].InputNode)
     [<SetUp>]
     member this.Setup () =
         ()
