@@ -70,11 +70,11 @@ let dot a b =
 let identity size =
     [for r in 0..size-1 -> [for c in 0..size-1 -> if r = c then 1 else 0]]
 
-let inverse a =
-    a
+// let inverse a =
+//     a
 
-let div a b =
-    dot (a) (inverse b)
+// let div a b =
+//     dot (a) (inverse b)
 
 let matrixTest a b =
     test (getValue a 0 0) (Some b)
