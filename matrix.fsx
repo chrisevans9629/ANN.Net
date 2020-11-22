@@ -50,6 +50,11 @@ let transpose a =
     let (ro,co) = size a
     [for c in 0..co-1 ->[for r in 0..ro-1 -> a.[r].[c]]]
 
+let dot a b =
+    let (ar,ac) = size a
+    let (br,bc) = size b
+    
+
 let matrixTest a b =
     test (getValue a 0 0) (Some b)
 
