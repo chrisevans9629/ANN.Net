@@ -70,6 +70,7 @@ let dot a b =
 let identity size =
     [for r in 0..size-1 -> [for c in 0..size-1 -> if r = c then 1 else 0]]
 
+
 // let inverse a =
 //     a
 
@@ -93,6 +94,8 @@ let dotResult = dot A B
 printfn "%A" dotResult
 matrixTest dotResult 20
 
+
+
 let X = [
     [3;4;2]
 ]
@@ -114,6 +117,8 @@ test (size X) (1, 3)
 printfn "%A" idM
 
 printfn "%A" (dot X idM)
+
+//printfn "%A" (zeros [3, 2])
 //printfn "%A" (dot idM X)
 
 //matrixTest (dot idM X) 3
