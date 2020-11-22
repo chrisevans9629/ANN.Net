@@ -12,9 +12,9 @@ type TestResult = Pass | Fail of string
 
 let test a b =
     if not (a.Equals(b)) then
-        Fail (sprintf "expected %A but got %A" b a)
+        printfn "%A" (Fail (sprintf "expected %A but got %A" b a))
     else
-        Pass
+        printfn "%A" Pass
 
 //printfn "%A" (test 1 1)
 //printfn "%A" (test 1 2)
@@ -50,23 +50,71 @@ let transpose a =
     let (ro,co) = size a
     [for c in 0..co-1 ->[for r in 0..ro-1 -> a.[r].[c]]]
 
+//[1,3]x[1
+//       2]
+//
 let dot a b =
     let (ar,ac) = size a
     let (br,bc) = size b
-    
+    let mul a b r c =
+        let row: int list = a |> List.item r 
+        let column: int list = [for row in b -> row |> List.item c]
+        [for i in 0..row.Length-1 -> row.[i] * column.[i]] |> List.sum
+
+    if ac <> br then 
+        printfn "%A did not match %A" (ar,ac) (br, bc)
+        None
+    else
+        Some [for r in 0..ar-1 -> [for c in 0..bc-1 -> mul a b r c]]
+
+let identity size =
+    [for r in 0..size-1 -> [for c in 0..size-1 -> if r = c then 1 else 0]]
+
+let inverse a =
+    a
+
+let div a b =
+    dot (a) (inverse b)
 
 let matrixTest a b =
     test (getValue a 0 0) (Some b)
 
-printfn "%A" (matrixTest (add A B) 7)
-printfn "%A" (matrixTest (negate A) -3)
-printfn "%A" (matrixTest (subtract A B) -1)
-printfn "%A" (matrixTest (scalar A 10) 30)
+matrixTest (add A B) 7
+matrixTest (negate A) -3
+matrixTest (subtract A B) -1
+matrixTest (scalar A 10) 30
 
 let tran = transpose A
 
-printfn "%A" (matrixTest (Some tran) 3)
-printfn "%A" (test (getValue (Some tran) 0 1) (Some 4))
+matrixTest (Some tran) 3
+test (getValue (Some tran) 0 1) (Some 4)
 
+let dotResult = dot A B
+printfn "%A" dotResult
+matrixTest dotResult 20
 
-printfn "%A" (transpose A)
+let X = [
+    [3;4;2]
+]
+
+let Y = [
+    [13;9;7;15]
+    [8;7;4;6]
+    [6;4;0;3]
+]
+
+printfn "%A" (dot X Y)
+
+matrixTest (dot [[1;2;3]] [[4];[5];[6]]) 32
+
+let idM = identity 3
+
+test (size idM) (3,3)
+test (size X) (1, 3)
+printfn "%A" idM
+
+printfn "%A" (dot X idM)
+//printfn "%A" (dot idM X)
+
+//matrixTest (dot idM X) 3
+//printfn "%A" (transpose A)
