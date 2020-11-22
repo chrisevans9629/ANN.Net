@@ -10,7 +10,6 @@ test 1 1
 type Cell<'a> = {Value:'a;Positions:int list}
 
 
-let zeros<'a> (dim:int list) (v:'a) =
-    let cellCount = List.
-    
-    v
+// let zeros<'a> (dim:int list) (v:'a) =
+//     let cellCount = dim |> List.fold (fun x y -> x * y)
+//     v
