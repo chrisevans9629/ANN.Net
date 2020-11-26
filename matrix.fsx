@@ -18,6 +18,7 @@ let B = {Data=[
 
 let matrix a =
     {Data=a}
+
 //printfn "%A" (test 1 1)
 //printfn "%A" (test 1 2)
 
@@ -77,6 +78,9 @@ let zeroes rows columns =
 
 let rand = new System.Random()
 
+let map (a:Matrix) func =
+    {Data=[for r in a.Data -> [for c in r -> func c]]}
+
 let random rows columns =
     {Data=[for r in 0..rows-1 -> [for c in 0..columns-1 -> rand.NextDouble() * 2. - 1.]]}
 
@@ -95,12 +99,16 @@ let flatten (matrix: Matrix) =
 type Matrix with
     static member (+) (a,b) =
         add a b
+    static member (+) (a,b) =
+        map a (fun x -> x + b)
     static member (*) (a,b) =
         dot a b
     static member (*) (a,b) =
         scalar a b
     static member (/) (a,b) =
         scalar a (1./b)
+    member x.T =
+        transpose x
 // let inline (+) a b =
 //     add a b
 // let inline (*) a b =
@@ -186,22 +194,67 @@ let sigmoid (x:float): float = 1. + 1.//1. / (1. +  Math.Pow(Math.E, -x))
 //         self.who = numpy.random.normal(0, pow(self.hnodes, -0.5), (self.onodes, self.hnodes))
 //         self.activation_function = lambda x: scipy.special.expit(x)
 type Network = {
-    inputsNodes:int
-    hiddenNodes:int
-    outputNodes:int
-    learning:float
-    weightsInputHidden:Matrix
-    weightsHiddenOutput:Matrix
-    activationFunction: float -> float
+    InputsNodes:int
+    HiddenNodes:int
+    OutputNodes:int
+    LearningRate:float
+    WeightsInputHidden:Matrix
+    WeightsHiddenOutput:Matrix
+    ActivationFunction: float -> float
     }
 
 let network i h o lr =
     {
-        inputsNodes = i
-        hiddenNodes = h
-        outputNodes = o
-        learning = lr
-        activationFunction = sigmoid
-        weightsInputHidden = (random h i) / float(i)
-        weightsHiddenOutput = (random o h) / float(h)
+        InputsNodes = i
+        HiddenNodes = h
+        OutputNodes = o
+        LearningRate = lr
+        ActivationFunction = sigmoid
+        WeightsInputHidden = (random h i) / float(i)
+        WeightsHiddenOutput = (random o h) / float(h)
     }
+//  def query(self, inputs_list):
+//         inputs = numpy.array(inputs_list, ndmin=2).T
+//         hidden_inputs = numpy.dot(self.wih, inputs)
+//         hidden_outputs = self.activation_function(hidden_inputs)
+//         final_inputs = numpy.dot(self.who, hidden_outputs)
+//         final_outputs = self.activation_function(final_inputs)
+//         return final_outputs
+let imageNet = network 784 100 10 0.1
+
+let train (net:Network) = 
+    net
+
+let query (net:Network) (inputs_list: Matrix) =
+    let inputs = inputs_list.T
+    let hidden_inputs = net.WeightsInputHidden * inputs
+    let hidden_outputs = hidden_inputs |> Option.map (fun i -> map i net.ActivationFunction)
+    let final_inputs = hidden_outputs |> Option.map (fun o -> net.WeightsHiddenOutput * o)
+    
+    let final_output = final_inputs |> Option.flatten |> Option.map (fun i -> map i net.ActivationFunction)
+    final_output |> Option.map (fun r -> flatten r)
+    
+ 
+let file_list = System.IO.File.ReadAllLines("mnist_train.csv")
+
+//Test some input
+// firstValues = item.split(',')
+
+//     answer = int(firstValues[0])
+
+//     input = numpy.asfarray(firstValues[1:]) / 255 * .99 + 0.1
+//     output = n.query(input)
+//     result = numpy.argmax(output)
+open System.Linq
+
+let fmatrix (a:string seq):Matrix =
+    {Data=[a |> Seq.map (fun r -> float(r)) |> Seq.toList]}
+for item in file_list.Take(10) do
+    let values = item.Split(',')
+    let answer = int(values.[0])
+    let input = (fmatrix (values.Skip(1))) / 255. * 0.99 + 0.1
+    let output = query imageNet input
+    let result = output |> Option.map (fun r -> r)
+    printfn "Expected: %A, Result: %A" answer result
+    
+
