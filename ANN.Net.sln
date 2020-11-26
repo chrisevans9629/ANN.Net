@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30711.63
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ANN.Net", "ANN.Net.fsproj", "{54A0103D-1024-4DF9-9AEC-CBDB5FE69EBC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{54A0103D-1024-4DF9-9AEC-CBDB5FE69EBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54A0103D-1024-4DF9-9AEC-CBDB5FE69EBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54A0103D-1024-4DF9-9AEC-CBDB5FE69EBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54A0103D-1024-4DF9-9AEC-CBDB5FE69EBC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {67FF9F2B-CCC1-406C-8C4E-29069AE900A2}
+	EndGlobalSection
+EndGlobal
