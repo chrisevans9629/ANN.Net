@@ -16,24 +16,28 @@ let B = {Data=[
         [1.;-9.]
     ]}
 
-
+let matrix a =
+    {Data=a}
 //printfn "%A" (test 1 1)
 //printfn "%A" (test 1 2)
 
 let size (a:Matrix) =
     (a.Data |> List.length, a.Data |> List.head |> List.length)    
 
-let getValue (a:Matrix option) r c =
-    match a with
-    | Some m -> Some (m.Data |> List.item r |> List.item c)
-    | None -> None
-let add a b: Matrix option =
+let getValue (a:Matrix) r c =
+    (a.Data |> List.item r |> List.item c)
+
+
+
+let add (a:Matrix) (b:Matrix): Matrix option =
     let (ar,ac) = size a
     let (br,bc) = size b
     if ar <> br || ac <> bc then
         None
     else
-        Some {Data=[for row in 0..ar-1 -> [for column in 0..ac-1 -> a.Data.[row].[column] + b.Data.[row].[column]]]}
+        Some (matrix [for row in 0..ar-1 -> 
+                        [for column in 0..ac-1 -> 
+                            (getValue a row column) + (getValue b row column) ]])
 
 let negate (a:Matrix) =
     Some {Data=[for y in a.Data -> [for x in y -> -x]]}
@@ -116,8 +120,8 @@ let test name a b =
     else
         printfn "%A: %A" name Pass
 
-let matrixTest name a b =
-    test name (getValue a 0 0) (Some b)
+let matrixTest name (a: Matrix option) b =
+    test name (a |> Option.map (fun r -> getValue r 0 0)) (Some b)
 
 matrixTest "Add-Op" (A + B) 7.
 matrixTest "Add" (add A B) 7.
@@ -128,7 +132,7 @@ matrixTest "Scalar" (Some (scalar A 10.)) 30.
 let tran = transpose A
 
 matrixTest "Tran" (Some tran) 3.
-test "TranVal" (getValue (Some tran) 0 1) (Some 4.)
+test "TranVal" (getValue (tran) 0 1) (Some 4.)
 
 let dotResult = dot A B
 printfn "%A" dotResult
@@ -145,8 +149,7 @@ let Y = {Data=[
     [8.;7.;4.;6.]
     [6.;4.;0.;3.]
     ]}
-let matrix a =
-    {Data=a}
+
 printfn "%A" (dot X Y)
 
 matrixTest "Dot2" (dot (matrix [[1.;2.;3.]]) (matrix [[4.];[5.];[6.]])) 32.
