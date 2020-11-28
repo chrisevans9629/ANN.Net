@@ -33,7 +33,7 @@ let getValue (a:Matrix) r c =
 let setValue (a:Matrix) row column value =
     {Data=[for r in 0..a.Data.Length-1 -> [for c in 0..a.Data.[r].Length-1 -> if r = row && c = column then value else a.Data.[r].[c] ]]}
 
-let add (a:Matrix) (b:Matrix): Matrix option =
+let merge (a:Matrix) (b:Matrix) (func:float -> float -> float):Matrix option =
     let (ar,ac) = size a
     let (br,bc) = size b
     if ar <> br || ac <> bc then
@@ -41,7 +41,16 @@ let add (a:Matrix) (b:Matrix): Matrix option =
     else
         Some (matrix [for row in 0..ar-1 -> 
                         [for column in 0..ac-1 -> 
-                            (getValue a row column) + (getValue b row column) ]])
+                            func (getValue a row column) (getValue b row column) ]])
+
+let add (a:Matrix) (b:Matrix): Matrix option =
+    merge a b (fun x y -> x + y)
+
+let mult a b =
+    merge a b (fun x y -> x * y)
+
+let mult2 a b =
+    a |> Option.map (fun r -> mult r b) |> Option.flatten
 
 let negate (a:Matrix) =
     {Data=[for y in a.Data -> [for x in y -> -x]]}
@@ -110,12 +119,12 @@ type Matrix with
     static member (-) (a,b) =
         map b (fun x -> a - x)
 
-    static member (*) (a,b) =
-        match a with
-        | Some aa -> dot aa b
-        | None -> None
-    static member (*) (a,b) =
-        dot a b
+    //static member (*) (a,b) =
+    //    match a with
+    //    | Some aa -> dot aa b
+    //    | None -> None
+    //static member (*) (a,b) =
+    //    dot a b
     static member (*) (a,b) =
         scalar a b
     static member (*) (a,b) =
