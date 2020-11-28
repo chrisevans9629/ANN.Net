@@ -14,7 +14,7 @@ let matrixTest name (a: Matrix option) b =
 
 matrixTest "Add-Op" (A + B) 7.
 matrixTest "Add" (add A B) 7.
-matrixTest "Negate" (negate A) -3.
+matrixTest "Negate" (Some (negate A)) -3.
 matrixTest "Subtract" (subtract A B) -1.
 matrixTest "Scalar" (Some (scalar A 10.)) 30.
 

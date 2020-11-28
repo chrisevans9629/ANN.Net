@@ -30,7 +30,8 @@ let size (a:Matrix) =
 let getValue (a:Matrix) r c =
     (a.Data |> List.item r |> List.item c)
 
-
+let setValue (a:Matrix) row column value =
+    {Data=[for r in 0..a.Data.Length-1 -> [for c in 0..a.Data.[r].Length-1 -> if r = row && c = column then value else a.Data.[r].[c] ]]}
 
 let add (a:Matrix) (b:Matrix): Matrix option =
     let (ar,ac) = size a
@@ -43,13 +44,11 @@ let add (a:Matrix) (b:Matrix): Matrix option =
                             (getValue a row column) + (getValue b row column) ]])
 
 let negate (a:Matrix) =
-    Some {Data=[for y in a.Data -> [for x in y -> -x]]}
+    {Data=[for y in a.Data -> [for x in y -> -x]]}
 
 let subtract a b =
     let nb = negate b
-    match nb with
-    | Some b -> add a b
-    | None -> None
+    add a nb
 
 let scalar a s =
     {Data=[for y in a.Data -> [for x in y -> x * s]]}
@@ -83,6 +82,7 @@ let rand = new System.Random()
 let map (a:Matrix) func =
     {Data=[for r in a.Data -> [for c in r -> func c]]}
 
+
 let random rows columns =
     {Data=[for r in 0..rows-1 -> [for c in 0..columns-1 -> rand.NextDouble() * 2. - 1.]]}
 
@@ -103,10 +103,27 @@ type Matrix with
         add a b
     static member (+) (a,b) =
         map a (fun x -> x + b)
+    static member (-) (a,b) =
+        subtract a b
+    static member (-) (a,b) =
+        map a (fun x -> x - b)
+    static member (-) (a,b) =
+        map b (fun x -> a - x)
+
+    static member (*) (a,b) =
+        match a with
+        | Some aa -> dot aa b
+        | None -> None
     static member (*) (a,b) =
         dot a b
     static member (*) (a,b) =
         scalar a b
+    static member (*) (a,b) =
+        scalar b a
+    static member (*) (a,b) =
+        match b with
+        | Some bb -> Some (scalar bb a)
+        | None -> None
     static member (/) (a,b) =
         scalar a (1./b)
     member x.T =
