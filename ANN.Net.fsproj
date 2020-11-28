@@ -14,6 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="mnist_train.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Compile Include="Matrix.fs" />
     <Compile Include="Network.fs" />
     <Compile Include="Handwriting.fs" />
