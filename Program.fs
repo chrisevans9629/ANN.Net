@@ -1,5 +1,6 @@
 module Program
-open Handwriting
+//open Handwriting
+open XOR
 open System
 [<EntryPoint>]
 let main _ = 
@@ -10,8 +11,8 @@ let main _ =
    
    //Network.save net "net.json"
 
-   let net = { imageNet with Model = (Network.load "net.json")}
-
-   query net
+   //let net = { imageNet with Model = (Network.load "net.json")}
+   exe() |> ignore
+   //query net
    Console.ReadLine() |> ignore
    0

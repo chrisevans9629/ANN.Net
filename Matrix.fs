@@ -98,6 +98,10 @@ let random rows columns =
 let flatten (matrix: Matrix) =
     [for r in 0..matrix.Data.Length-1 do 
         for c in 0..matrix.Data.[r].Length-1 -> matrix.Data.[r].[c]]
+
+let inline fmatrix (a:'a seq):Matrix =
+    {Data=[a |> Seq.map (fun r -> float(r)) |> Seq.toList]}
+
 // let inverse a =
 //     a
 
