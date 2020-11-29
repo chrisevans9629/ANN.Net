@@ -1,5 +1,7 @@
 import numpy
 import scipy.special as sp
+import math
+sigmoid = lambda x: 1/(1 + math.e**-x)
 
 class NeuralNetwork:
     def __init__(self, inputnodes, hiddennodes, outputnodes, learningrate):
@@ -9,7 +11,7 @@ class NeuralNetwork:
         self.lr = learningrate
         self.wih = numpy.random.normal(0, pow(self.inodes, -0.5), (self.hnodes, self.inodes))
         self.who = numpy.random.normal(0, pow(self.hnodes, -0.5), (self.onodes, self.hnodes))
-        self.activation_function = lambda x: sp.expit(x)
+        self.activation_function = sigmoid
         #self.wih = numpy.random.rand(self.hnodes, self.inodes) - 0.5
         #self.who = numpy.random.rand(self.hnodes, self.onodes) - 0.5
         pass
