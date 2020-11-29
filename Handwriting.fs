@@ -6,7 +6,7 @@ open Matrix
 
 let imageNet = network 784 100 10 0.1
  
-let file_list = System.IO.File.ReadAllLines("mnist_train.csv")
+let file_list = System.IO.File.ReadAllLines("mnist_train.csv").Take(100).ToArray()
 
 let fmatrix (a:string seq):Matrix =
     {Data=[a |> Seq.map (fun r -> float(r)) |> Seq.toList]}
@@ -17,9 +17,11 @@ let rec trainNetwork (net:Network) index =
         let values = item.Split(',')
         let answer = int(values.[0])
         let input = (fmatrix (values.Skip(1))) / 255. * 0.99 + 0.1
-        let targets = (zeroes 1 net.OutputNodes) + 0.01
+        let targets = (zeroes 1 net.Model.OutputNodes) + 0.01
         let targets2 = setValue targets 1 answer 0.99
         let newNet = train net input targets2
+        printfn "%i: Error: %f" index newNet.TotalError
+
         trainNetwork newNet (index+1)
     else
         net

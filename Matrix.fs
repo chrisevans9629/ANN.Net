@@ -118,7 +118,11 @@ type Matrix with
         map a (fun x -> x - b)
     static member (-) (a,b) =
         map b (fun x -> a - x)
-
+    
+    static member (*) (a,b) =
+        mult a b
+    static member (*) (a,b) =
+        mult2 a b
     //static member (*) (a,b) =
     //    match a with
     //    | Some aa -> dot aa b
@@ -135,7 +139,7 @@ type Matrix with
         | None -> None
     static member (/) (a,b) =
         scalar a (1./b)
-    member x.T =
+    member x.T() =
         transpose x
 
 

@@ -5,8 +5,13 @@ open System
 let main _ = 
    Console.WriteLine("Reading...")
    
-   let net = trainNetwork imageNet 0
+   //let test = Network.load "net.json"
+   //let net = trainNetwork imageNet 0
    
+   //Network.save net "net.json"
+
+   let net = { imageNet with Model = (Network.load "net.json")}
+
    query net
    Console.ReadLine() |> ignore
    0
