@@ -21,6 +21,7 @@
     <Compile Include="Matrix.fs" />
     <Compile Include="Network.fs" />
     <Compile Include="Handwriting.fs" />
+    <Compile Include="XOR.fs" />
     <Compile Include="Test.fs" />
     <None Include="matrix.fsx" />
     <Compile Include="UnitTest1.fs" />
